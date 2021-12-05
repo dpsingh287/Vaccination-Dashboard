@@ -9,7 +9,7 @@ from streamlit.logger import DEFAULT_LOG_MESSAGE
 
 #here we are importing all the required libraries
 
-#st.set_page_config(layout="wide") #to allow us to use the full width
+st.set_page_config(layout="wide") #to allow us to use the full width
 
 #defining a function to read all the required csv files into a data frame when needed
 def df_read(select):
