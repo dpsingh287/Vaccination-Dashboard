@@ -7,24 +7,11 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from streamlit.logger import DEFAULT_LOG_MESSAGE
 
-# st.markdown(
-#         f"""
-# <style>
-#     .reportview-container .main .block-container{{
-#         max-width: 80%;
-#         padding-right: 5rem;
-#         padding-left: 20rem;
-#     }}
-#     .reportview-container .main {{
-        
-#     }}
-# </style>
-# """,
-#         unsafe_allow_html=True,
-#     )
+#here we are importing all the required libraries
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide") #to allow us to use the full width
 
+#defining a function to read all the required csv files into a data frame when needed
 def df_read(select):
     reg_30="dashboard_export/India/last30DaysRegistration.csv"
     global df_reg30,df_cov,df_rurban,df_aefi,df_age,df_byage,df_detail,df_dose
@@ -52,33 +39,37 @@ def df_read(select):
     df_dose = pd.read_csv(dose)
 
 
-
+#Titles and markdown for the sidebar and the dashboard 
 st.title("Covid Vaccination Dashboard")
 st.sidebar.title("Covid Vaccination Dashboard")
-st.markdown("This application is a Covid Vaccination dashboard to visualize the statistics of Innoculations being carried out throughout the country")
-st.sidebar.markdown("This application is a Covid Vaccination dashboard to visualize the statistics of Innoculations being carried out throughout the country")
+st.markdown("This application is a Covid Vaccination dashboard to visualize the statistics of the largest Vaccination Campaign which is being carried out to check the spread of Covid throughout the country")
+st.sidebar.markdown("This application is a Covid Vaccination dashboard to visualize the statistics of the largest Vaccination Campaign which is being carried out to check the spread of Covid throughout the country")
 
-#st.sidebar.title("States")
+#To add a selectbox to the sidebar in order to select the state for which data is to be viewed
 select = st.sidebar.selectbox('State', ['India', 'Punjab', 'Haryana', 'Chandigarh' ], key='1')
 selectlabels=['India','Punjab', 'Haryana', 'Chandigarh']
 
+#Checkbox to hide or show the data through sidebar
 if not st.sidebar.checkbox("Hide", False, key='1'):
     if select in selectlabels:
-
+        #calling the function to read data into dataframes
         df_read(select)
         title_1="State Data for {}".format(select)
         st.title(title_1)
 
-
+        #A checkbox to hide/show the data as per required | Visible by default
         if not st.checkbox("Hide", False, key='107'):
                                     
             st.header("Vaccination Trends")
             
             if select == 'India':
                 bylabel=["By Age","By Doses"]
+                #Added a radio button to choose toggle between Vaccination Trends by Age or by Doses.
                 byradio=st.radio('',bylabel)
                 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+
                 if byradio == 'By Age':
+                    #Creating a scatter plot for Vaccination Trends By Age, which uses both lines and markers to highlight data points using Plotly
                     df=df_byage
                     set1 = { 'x': df.label, 'y': df.total, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'cyan','shape': 'spline',  'smoothing': 1.3 },'name': 'total','fill':'tonexty'}
                     set2 = { 'x': df.label, 'y': df.vac_18_45, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'seagreen','shape': 'spline',  'smoothing': 1.3 },'name': '18-44','fill':'tonexty'}
@@ -86,10 +77,11 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
                     set4 = { 'x': df.label, 'y': df.vac_60_above, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'red','shape': 'spline',  'smoothing': 1.3 },'name': '60 Above','fill':'tonexty'}
                     data = [set4, set3, set2, set1]
                     fig = go.Figure(data=data)
-                    st.plotly_chart(fig)
+                    st.plotly_chart(fig) # used to Display the Pyplot chart
                 
                 
                 elif byradio == 'By Doses':
+                    #Similarly, scatter plot for Vaccination Trends By Doses
                     df=df_dose
                     set1 = { 'x': df.label, 'y': df.total, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'cyan','shape': 'spline',  'smoothing': 1.3 },'name': 'Total Doses','fill':'tonexty'}
                     set2 = { 'x': df.label, 'y': df.dose1, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'seagreen','shape': 'spline',  'smoothing': 1.3 },'name': 'Dose 1','fill':'tonexty'}
@@ -97,10 +89,13 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
                     data = [set3, set2, set1]
                     fig = go.Figure(data=data)
                     st.plotly_chart(fig)
+
+
             else:
                 txt1="Cummulative Vaccination Data for {}".format(select)
                 st.header(txt1)
                 df=df_dose
+                # A scatter plot to show the Cummulative Vaccination date for States
                 set1 = { 'x': df.label, 'y': df.total, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'cyan','shape': 'spline',  'smoothing': 1.3 },'name': 'Total Doses','fill':'tonexty'}
                 set2 = { 'x': df.label, 'y': df.dose1, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'seagreen','shape': 'spline',  'smoothing': 1.3 },'name': 'Dose 1','fill':'tonexty'}
                 set3 = { 'x': df.label, 'y': df.dose2, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'yellow','shape': 'spline',  'smoothing': 1.3 },'name': 'Dose 2','fill':'tonexty'}                
@@ -108,10 +103,9 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
                 fig = go.Figure(data=data)
                 st.plotly_chart(fig)
 
-        # if not st.checkbox("Hide", False, key='106'):                        
-        #     st.header("Vaccination - Category")
 
-        if not st.checkbox("Hide", False, key='105'):                        
+        if not st.checkbox("Hide", False, key='105'):  
+            #Plotting a pie chart using plotly to show division of Vaccination data by age                      
             st.header("Vaccination by Age")
             df=df_age
             labels=["18-44","45-60","Above 60"]
@@ -120,15 +114,17 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
             st.plotly_chart(fig)
 
 
-        if not st.checkbox("Hide", False, key='110'):                        
+        if not st.checkbox("Hide", False, key='110'):
+            #Dataframe to show the district wise Vaccination metrics                  
             st.header("Vaccination by States/Districts")
             df=df_detail
             st.dataframe(df)
 
-        if not st.checkbox("Hide", False, key='104'):                        
+        if not st.checkbox("Hide", False, key='104'):  
+            #Scatter plot for the occurence of Reported side effects in the last 30 days.                      
             st.header("Reported AEFI")
             df=df_aefi
-            set1 = { 'x': df.vaccine_date, 'y': df.aefi, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Total','fill':'tonexty'}
+            set1 = { 'x': df.vaccine_date, 'y': df.aefi, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Total','fill':'tonexty'}
             data = [set1]
             fig = go.Figure(data=data)
             st.plotly_chart(fig)   
@@ -137,8 +133,8 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
         if not st.checkbox("Hide", False, key='103'):                        
             st.header("Rural Vs Urban Trend")
             df=df_rurban
-            set1 = { 'x': df.vaccine_date, 'y': df.rural, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Rural','fill':'tonexty'}
-            set2 = { 'x': df.vaccine_date, 'y': df.urban, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'green','shape': 'spline',  'smoothing': 1.3 },'name': 'Urban','fill':'tonexty'}
+            set1 = { 'x': df.vaccine_date, 'y': df.rural, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Rural','fill':'tonexty'}
+            set2 = { 'x': df.vaccine_date, 'y': df.urban, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'green','shape': 'spline',  'smoothing': 1.3 },'name': 'Urban','fill':'tonexty'}
             data = [set2, set1]
             fig = go.Figure(data=data)
             st.plotly_chart(fig)
@@ -152,14 +148,14 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
             fig.add_trace(go.Bar(
                 x=df.title,
                 y=df.partial_vaccinated,
-                name='Dose 1',
-                marker_color='#330C73',
+                name='Dose 1',  # name used in legend and hover labels
+                marker_color='#330C73', # defines the color of the bar
                 opacity=0.75
             ))
             fig.add_trace(go.Bar(
                 x=df.title,
                 y=df.totally_vaccinated,
-                name='Dose 2', # name used in legend and hover labels
+                name='Dose 2', 
                 marker_color='#EB89B5',
                 opacity=0.75
             ))
@@ -173,15 +169,17 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
                 bargap=0.2, # gap between bars of adjacent location coordinates
                 bargroupgap=0.1 # gap between bars of the same location coordinates
             )
-
             st.plotly_chart(fig)  
-    if not st.checkbox("Hide", False, key='101'):                        
+
+
+    if not st.checkbox("Hide", False, key='101'):        
+        #This graph shows a scatter plot for the Vaccination Registration data for the past 30 days.                
         st.header("30-day Registration Data - Pan India")
         df=df_reg30
-        set1 = { 'x': df.reg_date, 'y': df.total, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'total','fill':'tonexty'}
-        set2 = { 'x': df.reg_date, 'y': df.age18, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'green' ,'shape': 'spline',  'smoothing': 1.3},'name': '18-44','fill':'tonexty'}
-        set3 = { 'x': df.reg_date, 'y': df.age45, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'yellow','shape': 'spline',  'smoothing': 1.3 },'name': '45-60','fill':'tonexty'}
-        set4 = { 'x': df.reg_date, 'y': df.age60, 'type': 'scatter', 'mode': 'lines', 'line': { 'width': 1, 'color': 'black','shape': 'spline',  'smoothing': 1.3 },'name': '60 Above','fill':'tonexty'}
+        set1 = { 'x': df.reg_date, 'y': df.total, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'total','fill':'tonexty'}
+        set2 = { 'x': df.reg_date, 'y': df.age18, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'green' ,'shape': 'spline',  'smoothing': 1.3},'name': '18-44','fill':'tonexty'}
+        set3 = { 'x': df.reg_date, 'y': df.age45, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'yellow','shape': 'spline',  'smoothing': 1.3 },'name': '45-60','fill':'tonexty'}
+        set4 = { 'x': df.reg_date, 'y': df.age60, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'black','shape': 'spline',  'smoothing': 1.3 },'name': '60 Above','fill':'tonexty'}
         data = [set4, set3, set2, set1]
         fig = go.Figure(data=data)
         st.plotly_chart(fig)
