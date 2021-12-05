@@ -57,10 +57,11 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
         title_1="State Data for {}".format(select)
         st.title(title_1)
 
+        st.header("Vaccination Trends")
         #A checkbox to hide/show the data as per required | Visible by default
         if not st.checkbox("Hide", False, key='107'):
                                     
-            st.header("Vaccination Trends")
+            
             
             if select == 'India':
                 bylabel=["By Age","By Doses"]
@@ -103,35 +104,37 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
                 fig = go.Figure(data=data)
                 st.plotly_chart(fig)
 
-
+        
+        st.header("Vaccination by Age")
         if not st.checkbox("Hide", False, key='105'):  
             #Plotting a pie chart using plotly to show division of Vaccination data by age                      
-            st.header("Vaccination by Age")
+            
             df=df_age
             labels=["18-44","45-60","Above 60"]
             values=[df.iat[0,0],df.iat[0,1],df.iat[0,2]]
             fig = go.Figure(data=[go.Pie(labels=labels, values=values)])                 
             st.plotly_chart(fig)
 
-
+        st.header("Vaccination by States/Districts")
         if not st.checkbox("Hide", False, key='110'):
             #Dataframe to show the district wise Vaccination metrics                  
-            st.header("Vaccination by States/Districts")
+            
             df=df_detail
             st.dataframe(df)
 
+        st.header("Reported AEFI")
         if not st.checkbox("Hide", False, key='104'):  
             #Scatter plot for the occurence of Reported side effects in the last 30 days.                      
-            st.header("Reported AEFI")
+            
             df=df_aefi
             set1 = { 'x': df.vaccine_date, 'y': df.aefi, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Total','fill':'tonexty'}
             data = [set1]
             fig = go.Figure(data=data)
             st.plotly_chart(fig)   
 
-            
+        st.header("Rural Vs Urban Trend")    
         if not st.checkbox("Hide", False, key='103'):                        
-            st.header("Rural Vs Urban Trend")
+            
             df=df_rurban
             set1 = { 'x': df.vaccine_date, 'y': df.rural, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'Rural','fill':'tonexty'}
             set2 = { 'x': df.vaccine_date, 'y': df.urban, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'green','shape': 'spline',  'smoothing': 1.3 },'name': 'Urban','fill':'tonexty'}
@@ -139,9 +142,9 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
             fig = go.Figure(data=data)
             st.plotly_chart(fig)
             
-               
+        st.header("Vaccination Coverage")       
         if not st.checkbox("Hide", False, key='102'):                        
-            st.header("Vaccination Coverage")
+            
             df = df_cov
 
             fig = go.Figure()
@@ -171,10 +174,10 @@ if not st.sidebar.checkbox("Hide", False, key='1'):
             )
             st.plotly_chart(fig)  
 
-
+    st.header("30-day Registration Data - Pan India")    
     if not st.checkbox("Hide", False, key='101'):        
         #This graph shows a scatter plot for the Vaccination Registration data for the past 30 days.                
-        st.header("30-day Registration Data - Pan India")
+        
         df=df_reg30
         set1 = { 'x': df.reg_date, 'y': df.total, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'blue' ,'shape': 'spline',  'smoothing': 1.3},'name': 'total','fill':'tonexty'}
         set2 = { 'x': df.reg_date, 'y': df.age18, 'type': 'scatter', 'mode': 'lines+markers', 'line': { 'width': 1, 'color': 'green' ,'shape': 'spline',  'smoothing': 1.3},'name': '18-44','fill':'tonexty'}
